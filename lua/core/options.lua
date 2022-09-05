@@ -9,7 +9,7 @@ vim.api.nvim_command(("colorscheme %s"):format(colorscheme))
 
 utils.vim_opts(utils.user_plugin_opts("options", {
   opt = {
-    clipboard = "unnamedplus", -- Connection to the system clipboard
+    -- clipboard = "unnamedplus", -- Connection to the system clipboard
     completeopt = { "menuone", "noselect" }, -- Options for insert mode completion
     copyindent = true, -- Copy the previous indentation on autoindenting
     cursorline = true, -- Highlight the text line of the cursor

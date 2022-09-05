@@ -253,8 +253,8 @@ if utils.is_available "nvim-toggleterm.lua" then
 end
 
 -- Stay in indent mode
-map("v", "<", "<gv", { desc = "unindent line" })
-map("v", ">", ">gv", { desc = "indent line" })
+-- map("v", "<", "<gv", { desc = "unindent line" })
+-- map("v", ">", ">gv", { desc = "indent line" })
 
 -- Improved Terminal Mappings
 map("t", "<esc>", "<C-\\><C-n>", { desc = "Terminal normal mode" })

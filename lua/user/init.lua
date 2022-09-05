@@ -1,12 +1,13 @@
 local config = {
 
   -- Set colorscheme
-  colorscheme = "default_theme",
+  colorscheme = "onedark",
 
   -- set vim options here (vim.<first_key>.<second_key> =  value)
   options = {
     opt = {
       relativenumber = true, -- sets vim.opt.relativenumber
+      clipboard = "", -- Disables connection to the system clipboard
     },
     g = {
       mapleader = " ", -- sets vim.g.mapleader
@@ -39,6 +40,12 @@ local config = {
   plugins = {
     -- Add plugins, the packer syntax without the "use"
     init = {
+      {"machakann/vim-sandwich"},
+      {"lambdalisue/gina.vim"},
+      {"RRethy/nvim-treesitter-endwise"},
+      {"savq/melange"},
+      {"habamax/vim-godot"},
+      ["declancm/cinnamon.nvim"] = {disable = true},
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
 
@@ -55,12 +62,22 @@ local config = {
     -- All other entries override the setup() call for default plugins
     treesitter = {
       ensure_installed = { "lua" },
+      endwise ={
+        enabled = true
+      }
     },
     ["nvim-lsp-installer"] = {
       ensure_installed = { "sumneko_lua" },
     },
     packer = {
       compile_path = vim.fn.stdpath "config" .. "/lua/packer_compiled.lua",
+    },
+    lualine = {
+      sections = {
+        lualine_a = {
+          { "filename", file_status = true, path = 1, full_path = true, shorten = false },
+        },
+      }
     },
   },
 
@@ -121,6 +138,14 @@ local config = {
 
     -- Add overrides for LSP server settings, the keys are the name of the server
     ["server-settings"] = {
+      python = {
+        analysis = {
+          autoSearchPaths = true,
+          diagnosticMode = "workspace",
+          useLibraryCodeForTypes = true,
+          extraPaths = {'~/.virtualenvs/discord_api/lib/python3.7/site-packages', '/Users/kylemendes/Projects/discord/discord/discord_common/py'}
+        }
+      },
       -- example for addings schemas to yamlls
       -- yamlls = {
       --   settings = {
@@ -185,6 +210,17 @@ local config = {
   polish = function()
     -- Set key bindings
     vim.keymap.set("n", "<C-s>", ":w!<CR>")
+    local map = vim.keymap.set
+
+    map("n", "<C-s>", ":w!<CR>", opts)
+    map("n", "<leader>,", ":noh<CR>", opts)
+    map("n", "<S-t>", ":ToggleTerm size=6 direction=horizontal<CR>", opts)
+    map("n", "<leader>xl", ":colorscheme melange<CR> :set background=light<CR>", opts)
+    map("n", "<leader>xm", ":colorscheme melange<CR> :set background=dark<CR>", opts)
+    map("n", "<leadr>xd", ":colorscheme onedark<CR> :set background=dark<CR>", opts)
+    --
+    -- Telescope
+    map("n", "<leader>gf", "<cmd>Telescope git_files<CR>", opts)
 
     -- Set autocommands
     vim.api.nvim_create_augroup("packer_conf", { clear = true })
@@ -194,6 +230,17 @@ local config = {
       pattern = "plugins.lua",
       command = "source <afile> | PackerSync",
     })
+
+    vim.cmd [[
+      let blacklist = ['rb', 'js', 'pl']
+      augroup packer_conf
+        autocmd!
+        autocmd bufwritepost plugins.lua source <afile> | PackerSync
+      augroup end
+      augroup formatting
+        autocmd bufwritepre * if index(blacklist, &ft) < 0 |:%s/\s\+$//e
+      augroup end
+    ]]
 
     -- Set up custom filetypes
     -- vim.filetype.add {
