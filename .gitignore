@@ -1,5 +1,4 @@
 plugin
 docs
-lua/user
 lua/packer_compiled.lua
 ginit.vim
