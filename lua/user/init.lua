@@ -1,9 +1,9 @@
 local config = {
   options = {
     opt = {
+      clipboard = "",
       wrap = true,
     },
-    g = {},
   },
 
   mappings = {
@@ -11,7 +11,9 @@ local config = {
       ["<leader>,"] = {":noh<CR>", desc = "noh"},
       ["<leader>xl"] = {":colorscheme melange<CR> :set background=light<CR>", desc = "light melange"},
       ["<leader>xm"] = {":colorscheme melange<CR> :set background=dark<CR>", desc = "dark melange"},
-      ["<leader>xd"] = {":colorscheme onedark<CR> :set background=dark<CR>", desc = "dark default"},
+      ["<leader>xe"] = {":colorscheme everforest<CR> :set background=dark<CR>", desc = "dark everforest"},
+      ["<leader>xc"] = {":colorscheme catppuccin<CR> :set background=dark<CR>", desc = "dark catpuccin"},
+      ["<leader>xr"] = {":colorscheme rose-pine<CR>", desc = "dark rose"},
     }
   },
 
@@ -27,6 +29,74 @@ local config = {
       {"savq/melange"},
       {"EdenEast/nightfox.nvim"},
       {"sainnhe/everforest"},
+      {
+        "catppuccin/nvim",
+        as = "catppuccin",
+        config = function()
+          require("catppuccin").setup({
+            flavour = "latte" -- mocha, macchiato, frappe, latte
+          })
+          vim.cmd('colorscheme catppuccin')
+        end
+      },
+      -- {
+      --   "catppuccin/nvim",
+      --   as = "catppuccin",
+      --   config = function()
+      --     require("catppuccin").setup{
+      --     flavor = 'mocha',
+      --     styles = {
+      --       comments = "italic",
+      --       functions = "italic",
+      --       keywords = "italic",
+      --       strings = "NONE",
+      --       variables = "NONE",
+      --     },
+      --     color_overrides = {
+      --       all = {
+      --         rainbowcol1 = 'teal',
+      --         rainbowcol2 = 'teal',
+      --         rainbowcol3 = 'teal',
+      --         rainbowcol4 = 'teal',
+      --         rainbowcol5 = 'teal',
+      --         rainbowcol6 = 'teal',
+      --       }
+      --     },
+      --     custom_highlights = function(colors)
+      --       return {
+      --         rainbowcol1 = colors.teal,
+      --         rainbowcol2 = colors.teal,
+      --         rainbowcol3 = colors.teal,
+      --         rainbowcol4 = colors.teal,
+      --         rainbowcol5 = colors.teal,
+      --         rainbowcol6 = colors.teal,
+      --       }
+      --     end,
+      --     integrations = {
+      --       ts_rainbow = true
+      --       -- {
+      --       --   enabled = true,
+      --       --   colors = {
+      --       --     rainbowcol1 = { fg = "teal" },
+      --       --     rainbowcol2 = { fg = "teal" },
+      --       --     rainbowcol3 = { fg = "teal" },
+      --       --     rainbowcol4 = { fg = "lavendar" },
+      --       --     rainbowcol5 = { fg = "rosewater" },
+      --       --     rainbowcol6 = { fg = "peach" },
+      --       --     rainbowcol7 = { fg = "teal" },
+      --       --   }
+      --       -- },
+      --     },
+      --   }
+      --   vim.api.nvim_command "colorscheme catppuccin"
+      -- end,
+      -- },
+      {
+        "rose-pine/neovim",
+        as = "rose-pine",
+      },
+      -- Languages
+      -- {"ziglang/zig.vim"},
       -- Overrides
       ["declancm/cinnamon.nvim"] = {disable = true},
     },
@@ -84,6 +154,9 @@ local config = {
   },
 
   lsp = {
+    servers = {
+      'gdscript',
+    },
     ["server-settings"] = {
       python = {
         analysis = {
@@ -96,6 +169,12 @@ local config = {
     },
   },
 
+  polish = function()
+    local unmap = vim.api.nvim_del_keymap
+    unmap("v", "<")
+    unmap("v", ">")
+  end,
+
   default_theme = {
     diagnostics_style = { italic = true },
   },
@@ -103,6 +182,7 @@ local config = {
   melange = {
     diagnostics_style = { italic = true },
   },
+  -- colorscheme = 'rose-pine',
 }
 
 return config

@@ -180,8 +180,8 @@ if is_available "toggleterm.nvim" then
 end
 
 -- Stay in indent mode
--- maps.v["<"] = { "<gv", desc = "unindent line" }
--- maps.v[">"] = { ">gv", desc = "indent line" }
+maps.v["<"] = { "<gv", desc = "unindent line" }
+maps.v[">"] = { ">gv", desc = "indent line" }
 
 -- Improved Terminal Mappings
 maps.t["<esc>"] = { "<C-\\><C-n>", desc = "Terminal normal mode" }
