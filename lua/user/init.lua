@@ -4,6 +4,22 @@ local config = {
       clipboard = "",
       wrap = true,
     },
+    g = {
+      italic = true,
+      catppuccin_flavour = "frappe",
+      catppuccin_styles = {
+        comments = {"italic"},
+        functions = {"italic"},
+        keywords = {"bold"},
+        strings = "NONE",
+        variables = "NONE",
+      },
+      catppuccin_custom_highlights = function(colors)
+        return {
+          rainbowcol1 = colors.flamingo,
+        }
+      end,
+    }
   },
 
   mappings = {
@@ -14,6 +30,10 @@ local config = {
       ["<leader>xe"] = {":colorscheme everforest<CR> :set background=dark<CR>", desc = "dark everforest"},
       ["<leader>xc"] = {":colorscheme catppuccin<CR> :set background=dark<CR>", desc = "dark catpuccin"},
       ["<leader>xr"] = {":colorscheme rose-pine<CR>", desc = "dark rose"},
+      ["<C-e>"] = function()
+        local result = vim.treesitter.get_captures_at_cursor()
+        print(vim.inspect(result))
+      end,
     }
   },
 
@@ -170,6 +190,32 @@ local config = {
   },
 
   polish = function()
+    require("catppuccin").setup {
+      flavour = "frappe",
+      integrations = {
+        ts_rainbow = true,
+      },
+      color_overrides = {
+        frappe = {
+          base = '#232136',
+		      surface = '#2a273f',
+		      overlay = '#393552',
+		      muted = '#6e6a86',
+		      subtle = '#908caa',
+		      text = '#e0def4',
+		      love = '#eb6f92',
+		      gold = '#f6c177',
+		      rose = '#ea9a97',
+		      pine = '#3e8fb0',
+		      foam = '#9ccfd8',
+		      iris = '#c4a7e7',
+		      highlight_low = '#2a283e',
+		      highlight_med = '#44415a',
+		      highlight_high = '#56526e',
+		      none = 'NONE',
+        }
+      },
+    }
     local unmap = vim.api.nvim_del_keymap
     unmap("v", "<")
     unmap("v", ">")
@@ -182,7 +228,7 @@ local config = {
   melange = {
     diagnostics_style = { italic = true },
   },
-  -- colorscheme = 'rose-pine',
+  colorscheme = 'catppuccin',
 }
 
 return config
