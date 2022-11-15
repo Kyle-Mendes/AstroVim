@@ -14,14 +14,14 @@ local git = require "core.utils.git"
 --- Updater settings overridden with any user provided configuration
 local options = astronvim.user_plugin_opts("updater", {
   remote = "origin",
-  branch = "main",
-  channel = "nightly",
+  channel = "stable",
   show_changelog = true,
-  auto_reload = false,
-  auto_quit = false,
+  auto_reload = true,
+  auto_quit = true,
 })
 
 -- set the install channel
+if options.branch then options.channel = "nightly" end
 if astronvim.install.is_stable ~= nil then options.channel = astronvim.install.is_stable and "stable" or "nightly" end
 
 astronvim.updater = { options = options }
@@ -47,13 +47,23 @@ function astronvim.updater.version(quiet)
   return version
 end
 
+--- Get the full AstroNvim changelog
+-- @param quiet boolean to quietly execute or display the changelog
+-- @return the current AstroNvim changelog table of commit messages
+function astronvim.updater.changelog(quiet)
+  local summary = {}
+  vim.list_extend(summary, git.pretty_changelog(git.get_commit_range()))
+  if not quiet then astronvim.echo(summary) end
+  return summary
+end
+
 --- Attempt an update of AstroNvim
 -- @param target the target if checking out a specific tag or commit or nil if just pulling
 local function attempt_update(target)
   -- if updating to a new stable version or a specific commit checkout the provided target
   if options.channel == "stable" or options.commit then
     return git.checkout(target, false)
-  -- if no target, pull the latest
+    -- if no target, pull the latest
   else
     return git.pull(false)
   end
@@ -69,13 +79,13 @@ function astronvim.updater.reload(quiet)
   if vim.fn.exists ":LspStop" ~= 0 then vim.cmd "LspStop" end
   local reload_module = require("plenary.reload").reload_module
   -- unload AstroNvim configuration files
-  reload_module("user", false)
-  reload_module("configs", false)
-  reload_module("default_theme", false)
-  reload_module("core", false)
+  reload_module "user"
+  reload_module "configs"
+  reload_module "default_theme"
+  reload_module "core"
   -- manual unload some plugins that need it if they exist
-  reload_module("cmp", false)
-  reload_module("which-key", false)
+  reload_module "cmp"
+  reload_module "which-key"
   -- source the AstroNvim configuration
   local reloaded, _ = pcall(dofile, vim.fn.expand "$MYVIMRC")
   -- if successful reload and not quiet, display a notification
@@ -84,6 +94,15 @@ end
 
 --- AstroNvim's updater function
 function astronvim.updater.update()
+  -- if the git command is not available, then throw an error
+  if not git.available() then
+    astronvim.notify(
+      "git command is not available, please verify it is accessible in a command line. This may be an issue with your PATH",
+      "error"
+    )
+    return
+  end
+
   -- if installed with an external package manager, disable the internal updater
   if not git.is_repo() then
     astronvim.notify("Updater not available for non-git installations", "error")
@@ -118,32 +137,43 @@ function astronvim.updater.update()
     end
   end
   local is_stable = options.channel == "stable"
-  options.branch = is_stable and "main" or options.branch
+  if is_stable then
+    options.branch = "main"
+  elseif not options.branch then
+    options.branch = "nightly"
+  end
   -- fetch the latest remote
   if not git.fetch(options.remote) then
     vim.api.nvim_err_writeln("Error fetching remote: " .. options.remote)
     return
   end
-  -- switch to the necessary branch
-  local local_branch = (options.remote == "origin" and "" or (options.remote .. "_")) .. options.branch
-  if git.current_branch() ~= local_branch then
-    astronvim.echo {
-      { "Switching to branch: " },
-      { options.remote .. "/" .. options.branch .. "\n\n", "String" },
-    }
-    if not git.checkout(local_branch, false) then
-      git.checkout("-b " .. local_branch .. " " .. options.remote .. "/" .. options.branch, false)
+  -- switch to the necessary branch only if not on the stable channel
+  if not is_stable then
+    local local_branch = (options.remote == "origin" and "" or (options.remote .. "_")) .. options.branch
+    if git.current_branch() ~= local_branch then
+      astronvim.echo {
+        { "Switching to branch: " },
+        { options.remote .. "/" .. options.branch .. "\n\n", "String" },
+      }
+      if not git.checkout(local_branch, false) then
+        git.checkout("-b " .. local_branch .. " " .. options.remote .. "/" .. options.branch, false)
+      end
     end
-  end
-  -- check if the branch was switched to successfully
-  if git.current_branch() ~= local_branch then
-    vim.api.nvim_err_writeln("Error checking out branch: " .. options.remote .. "/" .. options.branch)
-    return
+    -- check if the branch was switched to successfully
+    if git.current_branch() ~= local_branch then
+      vim.api.nvim_err_writeln("Error checking out branch: " .. options.remote .. "/" .. options.branch)
+      return
+    end
   end
   local source = git.local_head() -- calculate current commit
   local target -- calculate target commit
   if is_stable then -- if stable get tag commit
-    options.version = git.latest_version(git.get_versions(options.version or "latest"))
+    local version_search = options.version or "latest"
+    options.version = git.latest_version(git.get_versions(version_search))
+    if not options.version then -- continue only if stable version is found
+      vim.api.nvim_err_writeln("Error finding version: " .. version_search)
+      return
+    end
     target = git.tag_commit(options.version)
   elseif options.commit then -- if commit specified use it
     target = git.branch_contains(options.remote, options.branch, options.commit) and options.commit or nil
@@ -190,7 +220,7 @@ function astronvim.updater.update()
     then
       astronvim.echo(cancelled_message)
       return
-    -- if continued and there were errors reset the base config and attempt another update
+      -- if continued and there were errors reset the base config and attempt another update
     elseif not updated then
       git.hard_reset(source)
       updated = attempt_update(target)
@@ -225,17 +255,19 @@ function astronvim.updater.update()
     -- if the user wants to reload and sync packer
     if options.auto_reload then
       -- perform a reload
+      vim.opt.modifiable = true
       astronvim.updater.reload(true) -- run quiet to not show notification on reload
       -- sync packer if it is available
-      local packer_avail, packer = pcall(require, "packer")
+      local packer_avail, _ = pcall(require, "packer")
       if packer_avail then
         -- on a successful packer sync send user event
         vim.api.nvim_create_autocmd(
           "User",
-          { pattern = "PackerComplete", command = "doautocmd User AstroUpdateComplete" }
+          { once = true, pattern = "PackerComplete", command = "doautocmd User AstroUpdateComplete" }
         )
-        packer.sync()
-      -- if packer isn't available send successful update event
+        require "core.plugins"
+        vim.cmd "PackerSync"
+        -- if packer isn't available send successful update event
       else
         vim.cmd [[doautocmd User AstroUpdateComplete]]
       end
