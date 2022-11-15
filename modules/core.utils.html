@@ -42,6 +42,9 @@
 <ul class="nowrap">
   <li><a href="../modules/core.utils.git.html">core.utils.git</a></li>
   <li><strong>core.utils</strong></li>
+  <li><a href="../modules/core.utils.lsp.html">core.utils.lsp</a></li>
+  <li><a href="../modules/core.utils.status.html">core.utils.status</a></li>
+  <li><a href="../modules/core.utils.ui.html">core.utils.ui</a></li>
   <li><a href="../modules/core.utils.updater.html">core.utils.updater</a></li>
 </ul>
 <h2>Examples</h2>
@@ -74,12 +77,32 @@
 	<td class="summary">Main configuration engine logic for extending a default configuration table with either a function override or a table to merge into the default option</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#astronvim.default_tbl">astronvim.default_tbl(opts, default)</a></td>
+	<td class="summary">Merge extended options with a default table of options</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#astronvim.conditional_func">astronvim.conditional_func(func, condition)</a></td>
 	<td class="summary">Call function if a condition is met</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#astronvim.get_hlgroup">astronvim.get_hlgroup(name)</a></td>
+	<td class="summary">Get highlight properties for a given highlight name</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#astronvim.trim_or_nil">astronvim.trim_or_nil(str)</a></td>
 	<td class="summary">Trim a string or return nil</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.pad_string">astronvim.pad_string(str, padding)</a></td>
+	<td class="summary">Add left and/or right padding to a string</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.initialize_icons">astronvim.initialize_icons()</a></td>
+	<td class="summary">Initialize icons used throughout the user interface</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.get_icon">astronvim.get_icon(kind)</a></td>
+	<td class="summary">Get an icon from <code>lspkind</code> if it is available and return it</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#astronvim.notify">astronvim.notify(msg, type, opts)</a></td>
@@ -106,8 +129,8 @@
 	<td class="summary">User configuration entry point to override the default options of a configuration table with a user configuration file or table in the user/init.lua user settings</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#astronvim.url_opener">astronvim.url_opener()</a></td>
-	<td class="summary">Open a URL under the cursor with the current operating system</td>
+	<td class="name" nowrap><a href="#astronvim.system_open">astronvim.system_open(path)</a></td>
+	<td class="summary">Open a URL under the cursor with the current operating system (Supports Mac OS X and *nix)</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#astronvim.toggle_term_cmd">astronvim.toggle_term_cmd(term_details)</a></td>
@@ -158,10 +181,6 @@
 	<td class="summary">Add syntax matching rules for highlighting URLs/URIs</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#astronvim.toggle_url_match">astronvim.toggle_url_match()</a></td>
-	<td class="summary">Toggle URL/URI syntax highlighting rules</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#astronvim.cmd">astronvim.cmd(cmd, show_error)</a></td>
 	<td class="summary">Run a shell command and capture the output and if the command succeeded or failed</td>
 	</tr>
@@ -171,6 +190,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#astronvim.user_terminals">astronvim.user_terminals</a></td>
 	<td class="summary">table of user created terminals</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#astronvim.git_plugins">astronvim.git_plugins</a></td>
+	<td class="summary">table of plugins to load with git</td>
 	</tr>
 </table>
 <h2><a href="#Fields">Fields</a></h2>
@@ -236,6 +259,34 @@
 
 </dd>
     <dt>
+    <a name = "astronvim.default_tbl"></a>
+    <strong>astronvim.default_tbl(opts, default)</strong>
+    </dt>
+    <dd>
+    Merge extended options with a default table of options
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">opts</span>
+         the new options that should be merged with the default table
+        </li>
+        <li><span class="parameter">default</span>
+         the default table that you want to merge into
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the merged table
+    </ol>
+
+
+
+
+</dd>
+    <dt>
     <a name = "astronvim.conditional_func"></a>
     <strong>astronvim.conditional_func(func, condition)</strong>
     </dt>
@@ -253,6 +304,31 @@
         </li>
     </ul>
 
+
+
+
+
+</dd>
+    <dt>
+    <a name = "astronvim.get_hlgroup"></a>
+    <strong>astronvim.get_hlgroup(name)</strong>
+    </dt>
+    <dd>
+    Get highlight properties for a given highlight name
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">name</span>
+         highlight group name
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        table of highlight group properties
+    </ol>
 
 
 
@@ -277,6 +353,73 @@
     <ol>
 
         a trimmed version of the string or nil if the parameter isn't a string
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "astronvim.pad_string"></a>
+    <strong>astronvim.pad_string(str, padding)</strong>
+    </dt>
+    <dd>
+    Add left and/or right padding to a string
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">str</span>
+         the string to add padding to
+        </li>
+        <li><span class="parameter">padding</span>
+         a table of the format <code>{ left = 0, right = 0}</code> that defines the number of spaces to include to the left and the right of the string
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the padded string
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "astronvim.initialize_icons"></a>
+    <strong>astronvim.initialize_icons()</strong>
+    </dt>
+    <dd>
+    Initialize icons used throughout the user interface
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "astronvim.get_icon"></a>
+    <strong>astronvim.get_icon(kind)</strong>
+    </dt>
+    <dd>
+    Get an icon from <code>lspkind</code> if it is available and return it
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">kind</span>
+         the kind of icon in <code>lspkind</code> to retrieve
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        the icon
     </ol>
 
 
@@ -423,13 +566,19 @@
 
 </dd>
     <dt>
-    <a name = "astronvim.url_opener"></a>
-    <strong>astronvim.url_opener()</strong>
+    <a name = "astronvim.system_open"></a>
+    <strong>astronvim.system_open(path)</strong>
     </dt>
     <dd>
-    Open a URL under the cursor with the current operating system
+    Open a URL under the cursor with the current operating system (Supports Mac OS X and *nix)
 
 
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">path</span>
+         the path of the file to open with the system opener
+        </li>
+    </ul>
 
 
 
@@ -702,20 +851,6 @@
 
 </dd>
     <dt>
-    <a name = "astronvim.toggle_url_match"></a>
-    <strong>astronvim.toggle_url_match()</strong>
-    </dt>
-    <dd>
-    Toggle URL/URI syntax highlighting rules
-
-
-
-
-
-
-
-</dd>
-    <dt>
     <a name = "astronvim.cmd"></a>
     <strong>astronvim.cmd(cmd, show_error)</strong>
     </dt>
@@ -753,6 +888,20 @@
     </dt>
     <dd>
     table of user created terminals
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "astronvim.git_plugins"></a>
+    <strong>astronvim.git_plugins</strong>
+    </dt>
+    <dd>
+    table of plugins to load with git
 
 
 
@@ -842,7 +991,7 @@
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2022-11-15 18:20:07 </i>
+<i style="float:right;">Last updated 2022-11-15 18:24:28 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
