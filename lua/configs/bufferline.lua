@@ -3,7 +3,7 @@ local close_func = function(bufnum)
   if bufdelete_avail then
     bufdelete.bufdelete(bufnum, true)
   else
-    vim.cmd["bdelete!"] { args = { bufnum } }
+    vim.cmd.bdelete { args = { bufnum }, bang = true }
   end
 end
 require("bufferline").setup(astronvim.user_plugin_opts("plugins.bufferline", {
@@ -24,3 +24,13 @@ require("bufferline").setup(astronvim.user_plugin_opts("plugins.bufferline", {
     separator_style = "thin",
   },
 }))
+local highlights = require "bufferline.highlights"
+vim.api.nvim_create_autocmd("User", {
+  pattern = "AstroColorScheme",
+  group = "BufferlineCmds",
+  desc = "Bufferline apply colors after astronvim colorscheme change",
+  callback = function()
+    highlights.reset_icon_hl_cache()
+    highlights.set_all(require("bufferline.config").update_highlights())
+  end,
+})

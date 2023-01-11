@@ -19,7 +19,7 @@
     <a href="https://github.com/AstroNvim/AstroNvim/releases/latest">
       <img src="https://img.shields.io/github/v/release/AstroNvim/AstroNvim?style=for-the-badge&logo=gitbook&color=8bd5ca&logoColor=D9E0EE&labelColor=302D41"/>
 	</a>
-    <a href="https://github.com/catppuccin/catppuccin/stargazers">
+    <a href="https://github.com/AstroNvim/AstroNvim/stargazers">
       <img src="https://img.shields.io/github/stars/AstroNvim/AstroNvim?style=for-the-badge&logo=apachespark&color=eed49f&logoColor=D9E0EE&labelColor=302D41"/>
     </a>
     <br>
@@ -37,9 +37,9 @@ AstroNvim is an aesthetic and feature-rich neovim config that is extensible and 
 
 ## 🌟 Preview
 
-![Preview1](https://github.com/AstroNvim/astronvim.github.io/raw/main/static/img/dashboard.png)
-![Preview2](https://github.com/AstroNvim/astronvim.github.io/raw/main/static/img/overview.png)
-![Preview33](https://github.com/AstroNvim/astronvim.github.io/raw/main/static/img/vertsplit.png)
+![Dashboard Preview Image](https://github.com/AstroNvim/astronvim.github.io/raw/main/static/img/dashboard.png)
+![Coding Preview Image](https://github.com/AstroNvim/astronvim.github.io/raw/main/static/img/overview.png)
+![Debugging Preview Image](https://github.com/AstroNvim/astronvim.github.io/raw/main/static/img/dap.png)
 
 ## ✨ Features
 
@@ -52,6 +52,7 @@ AstroNvim is an aesthetic and feature-rich neovim config that is extensible and 
 - Syntax highlighting with [Treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
 - Formatting and linting with [Null-ls](https://github.com/jose-elias-alvarez/null-ls.nvim)
 - Language Server Protocol with [Native LSP](https://github.com/neovim/nvim-lspconfig)
+- Debug Adapter Protocol with [nvim-dap](https://github.com/mfussenegger/nvim-dap)
 - Buffer Line with [bufferline.nvim](https://github.com/akinsho/bufferline.nvim)
 
 ## ⚡ Requirements
@@ -73,15 +74,16 @@ AstroNvim is an aesthetic and feature-rich neovim config that is extensible and 
 
 ## 🛠️ Installation
 
-#### Make a backup of your current nvim folder
+#### Make a backup of your current nvim and shared folder
 
-```
-mv ~/.config/nvim ~/.config/nvimbackup
+```shell
+mv ~/.config/nvim ~/.config/nvim.bak
+mv ~/.local/share/nvim ~/.local/share/nvim.bak
 ```
 
 #### Clone the repository
 
-```
+```shell
 git clone https://github.com/AstroNvim/AstroNvim ~/.config/nvim
 nvim +PackerSync
 ```
@@ -97,6 +99,11 @@ Example: `:LspInstall pyright`
 
 Enter `:TSInstall` followed by the name of the language you want to install<br>
 Example: `:TSInstall python`
+
+#### Install Debugger
+
+Enter `:DapInstall` followed by the name of the debugger you want to install<br>
+Example: `:DapInstall python`
 
 #### Manage plugins
 
