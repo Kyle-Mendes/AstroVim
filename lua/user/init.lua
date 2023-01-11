@@ -34,59 +34,34 @@ local config = {
       },
       catppuccin_color_overrides = {
         mocha = {
-          base = '#191724',
-		      surface = '#1f1d2e',
-		      overlay = '#26233a',
-		      muted = '#6e6a86',
-		      subtle = '#908caa',
-		      text = '#e0def4',
-		      love = '#eb6f92',
-		      gold = '#f6c177',
-		      rose = '#ebbcba',
-		      pine = '#31748f',
-		      foam = '#9ccfd8',
-		      iris = '#c4a7e7',
-		      highlight_low = '#21202e',
-		      highlight_med = '#403d52',
-		      highlight_high = '#524f67',
-		      none = 'NONE',
+	        flamingo = "#F2CDCD",
+	        pink = "#F5C2E7",
+	        mauve = "#CBA6F7",
+	        red = "#F38BA8",
+	        maroon = "#EBA0AC",
+	        peach = "#FAB387",
+	        yellow = "#F9E2AF",
+	        green = "#A6E3A1",
+	        teal = "#94E2D5",
+	        sky = "#89DCEB",
+	        sapphire = "#74C7EC",
+	        blue = "#89B4FA",
+	        lavender = "#B4BEFE",
+
+	        text = "#CDD6F4",
+	        subtext1 = "#BAC2DE",
+	        subtext0 = "#A6ADC8",
+	        overlay2 = "#9399B2",
+	        overlay1 = "#7F849C",
+	        overlay0 = "#6C7086",
+	        surface2 = "#585B70",
+	        surface1 = "#45475A",
+	        surface0 = "#313244",
+
+	        base = "#1E1E2E",
+	        mantle = "#181825",
+	        crust = "#11111B",
         },
-        frappe = {
-          base = '#232136',
-		      surface = '#2a273f',
-		      overlay = '#393552',
-		      muted = '#6e6a86',
-		      subtle = '#908caa',
-		      text = '#e0def4',
-		      love = '#eb6f92',
-		      gold = '#f6c177',
-		      rose = '#ea9a97',
-		      pine = '#3e8fb0',
-		      foam = '#9ccfd8',
-		      iris = '#c4a7e7',
-		      highlight_low = '#2a283e',
-		      highlight_med = '#44415a',
-		      highlight_high = '#56526e',
-		      none = 'NONE',
-        },
-        latte = {
-          base = '#faf4ed',
-		      surface = '#fffaf3',
-		      overlay = '#f2e9e1',
-		      muted = '#9893a5',
-		      subtle = '#797593',
-		      text = '#575279',
-		      love = '#b4637a',
-		      gold = '#ea9d34',
-		      rose = '#d7827e',
-		      pine = '#286983',
-		      foam = '#56949f',
-		      iris = '#907aa9',
-		      highlight_low = '#f4ede8',
-		      highlight_med = '#dfdad9',
-		      highlight_high = '#cecacd',
-		      none = 'NONE',
-        }
       },
       catppuccin_custom_highlights = function(colors)
         return {
@@ -238,6 +213,10 @@ local config = {
       -- set up null-ls's on_attach function
       -- NOTE: You can remove this on attach function to disable format on save
       config.on_attach = function(client)
+        if client.name == 'tsserver' then
+          client.resolved_capabilities.document_formatting = false -- 0.7 and lower
+          client.server_capabilities.documentFormattingProvider = false -- 0.8 and up
+        end
         if client.resolved_capabilities.document_formatting then
           vim.filetype.add({
             extension = {
@@ -365,7 +344,7 @@ local config = {
   melange = {
     diagnostics_style = { italic = true },
   },
-  -- colorscheme = 'catppuccin-frappe',
+  colorscheme = 'catppuccin-mocha',
 }
 
 return config
